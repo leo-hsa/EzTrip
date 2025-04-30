@@ -1,40 +1,45 @@
+// src/app.module.ts
+
+// Добавьте эти строки:
+import { AppController } from './app.controller'; // Импорт AppController
+import { AppService } from './app.service';       // Импорт AppService
+import { ToursModule } from './tours/tours.module'; // Импорт ToursModule
+
+// --- Остальные существующие импорты ---
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-
+import { Tour } from './tours/entities/tour.entity';       // Эти импорты для TypeORM entities
+import { Weekday } from './weekdays/entities/weekday.entity'; // могут остаться, если вы
+import { Feature } from './features/entities/feature.entity'; // используете явное перечисление
 
 @Module({
   imports: [
-    // 1. Модуль Конфигурации - загружает переменные из .env
     ConfigModule.forRoot({
-      isGlobal: true, // Делаем ConfigModule глобальным, чтобы не импортировать его в каждом модуле
-      envFilePath: '.env', // Указываем путь к файлу .env
+      isGlobal: true,
+      envFilePath: '.env',
     }),
-
-    // 2. Модуль TypeORM - настраивает подключение к БД
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule], // Импортируем ConfigModule, чтобы использовать ConfigService
-      inject: [ConfigService], // Внедряем ConfigService для доступа к переменным окружения
+      imports: [ConfigModule],
+      inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        type: 'mysql', // Тип базы данных
+        type: 'mysql',
         host: configService.get<string>('DB_HOST'),
         port: configService.get<number>('DB_PORT'),
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_DATABASE'),
-        entities: [__dirname + '/../**/*.entity{.ts,.js}'], // Автоматически находить все файлы *.entity.ts/js
-        synchronize: true, // ВАЖНО: true - автоматически создает/обновляет таблицы БД на основе entities (УДОБНО ДЛЯ РАЗРАБОТКИ, ОПАСНО ДЛЯ ПРОДАКШЕНА!)
-        // В продакшене лучше использовать migrations, установите synchronize: false
-        logging: false, // Можно установить в true для отладки SQL-запросов
+        // Если вы вернули автоматическое сканирование:
+        // entities: [__dirname + '/../**/*.entity{.ts,.js}'],
+        // Если используете явное перечисление:
+        entities: [Tour, Weekday, Feature],
+        synchronize: true,
+        logging: true, // Оставим логирование включенным для отладки
       }),
     }),
-
-    // 3. Подключаем другие модули приложения (пока пусто)
-    // ToursModule, // Пример будущего модуля
+    ToursModule, // Теперь TypeScript знает, что это такое
   ],
-  controllers: [AppController], // Базовый контроллер NestJS
-  providers: [AppService],    // Базовый сервис NestJS
+  controllers: [AppController], // И это тоже
+  providers: [AppService],    // И это
 })
 export class AppModule {}

@@ -1,35 +1,27 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// src/App.tsx
+import React from 'react';
+import HeroSlider from './components/HeroSlider'; // Импортируем слайдер
+import TourList from './components/TourList';   // Импортируем список туров
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="App bg-gray-100"> {/* Общий фон можно задать здесь */}
+      {/* Здесь будет Header */}
+
+      {/* Наш слайдер */}
+      <HeroSlider />
+
+      {/* Список туров или другой контент под слайдером */}
+      <main className="container mx-auto p-4 mt-[-50px] relative z-10">
+         {/* mt-[-50px] и relative z-10 - чтобы контент немного "заехал" на слайдер, если нужно */}
+         {/* Если не нужно, уберите эти классы из main */}
+         {/* Можно добавить секцию с заголовком перед TourList */}
+         <TourList />
+      </main>
+
+      {/* Здесь будет Footer */}
+    </div>
+  );
 }
 
-export default App
+export default App;
