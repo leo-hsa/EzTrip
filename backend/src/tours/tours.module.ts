@@ -13,6 +13,6 @@ import { Feature } from '../features/entities/feature.entity'; // <-- Импор
   ],
   controllers: [ToursController],
   providers: [ToursService],
-  // exports: [ToursService] // Можно экспортировать сервис, если он нужен в других модулях
+   exports: [ToursService, TypeOrmModule] // Можно экспортировать сервис, если он нужен в других модулях
 })
 export class ToursModule {}

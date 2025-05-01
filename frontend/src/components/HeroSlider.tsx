@@ -1,7 +1,6 @@
 // src/components/HeroSlider.tsx
 import React, { useState, useEffect } from 'react';
 
-// Интерфейс для описания данных одного слайда
 interface SlideData {
   id: number;
   imageUrl: string;
@@ -13,21 +12,25 @@ interface SlideData {
   button2Link?: string;
 }
 
-// Данные для наших слайдов (замените imageUrl на ваши)
+// --- ВНИМАТЕЛЬНО ПРОВЕРЬТЕ И ЗАМЕНИТЕ ИМЕНА ФАЙЛОВ ---
 const slidesData: SlideData[] = [
   {
     id: 1,
-    imageUrl: 'https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1920&q=80', // Каппадокия
+    // Пример: если ваш файл называется cappadocia-main.jpg
+    // imageUrl: '/images/slider/cappadocia-main.jpg',
+    imageUrl: '/images/slider/slide1.jpg', // <-- ЗАМЕНИТЕ НА РЕАЛЬНОЕ ИМЯ И РАСШИРЕНИЕ
     title: 'Тур в Каппадокию',
     subtitle: 'Ваше воздушное приключение',
     button1Text: 'О Каппадокии',
     button2Text: 'Заказать Тур',
-    button1Link: '#about-cappadocia', // Замените на реальные ссылки или обработчики
+    button1Link: '#about-cappadocia',
     button2Link: '#book-tour',
   },
   {
     id: 2,
-    imageUrl: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1920&q=80', // Париж
+    // Пример: если ваш файл называется paris-evening.png
+    // imageUrl: '/images/slider/paris-evening.png',
+    imageUrl: '/images/slider/slide2.jpg', // <-- ЗАМЕНИТЕ НА РЕАЛЬНОЕ ИМЯ И РАСШИРЕНИЕ
     title: 'Выходные в Париже',
     subtitle: 'Романтика у Эйфелевой башни',
     button1Text: 'Подробнее',
@@ -37,7 +40,9 @@ const slidesData: SlideData[] = [
   },
   {
     id: 3,
-    imageUrl: 'https://images.unsplash.com/photo-1529260830199-42c24126f198?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1920&q=80', // Рим
+    // Пример: если ваш файл называется rome-colosseum.webp
+    // imageUrl: '/images/slider/rome-colosseum.webp',
+    imageUrl: '/images/slider/slide3.jpg', // <-- ЗАМЕНИТЕ НА РЕАЛЬНОЕ ИМЯ И РАСШИРЕНИЕ
     title: 'Величие Древнего Рима',
     subtitle: 'Колизей, Форум и история веков',
     button1Text: 'Узнать больше',
@@ -58,35 +63,24 @@ const HeroSlider: React.FC = () => {
     setCurrentSlide((prev) => (prev === slidesData.length - 1 ? 0 : prev + 1));
   };
 
-  // Опционально: Автоматическая смена слайдов
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     goToNext();
-  //   }, 5000); // Смена каждые 5 секунд
-  //   return () => clearTimeout(timer); // Очистка таймера при размонтировании или смене слайда
-  // }, [currentSlide]);
-
   return (
-    <div className="relative w-full h-[80vh] overflow-hidden"> {/* Высота слайдера */}
-      {/* Контейнер для слайдов */}
+    <div className="relative w-full h-[80vh] overflow-hidden bg-gray-900"> {}
       <div className="relative w-full h-full">
         {slidesData.map((slide, index) => (
           <div
             key={slide.id}
-            className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ease-in-out ${
+            className={`absolute inset-0 w-full h-full bg-cover bg-center transition-opacity duration-1000 ease-in-out ${ // Добавили bg-cover bg-center
               index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
             }`}
-            style={{ backgroundImage: `url(${slide.imageUrl})` }} // Устанавливаем фон
+            style={{ backgroundImage: `url(${slide.imageUrl})` }}
           >
-            {/* Оверлей для затемнения фона и читаемости текста */}
-            <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col items-center justify-center text-center p-4">
+            <div className="absolute inset-0 bg-opacity-40 flex flex-col items-center justify-center text-center p-4">
               <h1 className="text-white text-4xl md:text-6xl font-bold mb-4 drop-shadow-md">
                 {slide.title}
               </h1>
               <p className="text-white text-lg md:text-xl mb-8 drop-shadow-md">
                 {slide.subtitle}
               </p>
-              {/* Кнопки */}
               <div>
                 {slide.button1Text && (
                   <a
@@ -110,8 +104,8 @@ const HeroSlider: React.FC = () => {
         ))}
       </div>
 
-      {/* Кнопка "Назад" */}
-      <button
+      {/* Кнопки и точки навигации остаются без изменений */}
+       <button
         onClick={goToPrevious}
         aria-label="Previous Slide"
         className="absolute top-1/2 left-4 transform -translate-y-1/2 z-20 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition-opacity duration-300"
@@ -121,7 +115,6 @@ const HeroSlider: React.FC = () => {
         </svg>
       </button>
 
-      {/* Кнопка "Вперед" */}
       <button
         onClick={goToNext}
         aria-label="Next Slide"
@@ -132,7 +125,6 @@ const HeroSlider: React.FC = () => {
         </svg>
       </button>
 
-      {/* Опционально: Точки навигации */}
       <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2 z-20 flex space-x-2">
           {slidesData.map((_, index) => (
               <button

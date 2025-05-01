@@ -1,21 +1,17 @@
 // src/App.tsx
 import React from 'react';
-import HeroSlider from './components/HeroSlider'; // Импортируем слайдер
-import TourList from './components/TourList';   // Импортируем список туров
+import HeroSlider from './components/HeroSlider'; 
+import TourList from './components/TourList';  
 
 function App() {
   return (
-    <div className="App bg-gray-100"> {/* Общий фон можно задать здесь */}
-      {/* Здесь будет Header */}
-
-      {/* Наш слайдер */}
+    <div className="w-full"> {/* Общий фон можно задать здесь */}
+      
       <HeroSlider />
 
       {/* Список туров или другой контент под слайдером */}
-      <main className="container mx-auto p-4 mt-[-50px] relative z-10">
-         {/* mt-[-50px] и relative z-10 - чтобы контент немного "заехал" на слайдер, если нужно */}
-         {/* Если не нужно, уберите эти классы из main */}
-         {/* Можно добавить секцию с заголовком перед TourList */}
+      <main className="">
+        
          <TourList />
       </main>
 

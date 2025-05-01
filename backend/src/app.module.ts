@@ -1,17 +1,26 @@
 // src/app.module.ts
 
-// Добавьте эти строки:
-import { AppController } from './app.controller'; // Импорт AppController
-import { AppService } from './app.service';       // Импорт AppService
-import { ToursModule } from './tours/tours.module'; // Импорт ToursModule
-
-// --- Остальные существующие импорты ---
+// --- Импорты ---
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { ToursModule } from './tours/tours.module';
+import { BookingsModule } from './bookings/bookings.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Tour } from './tours/entities/tour.entity';       // Эти импорты для TypeORM entities
-import { Weekday } from './weekdays/entities/weekday.entity'; // могут остаться, если вы
-import { Feature } from './features/entities/feature.entity'; // используете явное перечисление
+import { CategoriesModule } from './categories/categories.module';
+
+// Импортируем ВСЕ классы сущностей
+import { Tour } from './tours/entities/tour.entity';
+import { Weekday } from './weekdays/entities/weekday.entity';
+import { Feature } from './features/entities/feature.entity';
+import { Booking } from './bookings/entities/booking.entity';
+import { BookingStatus } from './bookings/entities/booking-status.entity';
+import { ContactMethod } from './bookings/entities/contact-method.entity';
+import { Category } from './categories/entities/category.entity';
+
+
+
 
 @Module({
   imports: [
@@ -29,17 +38,31 @@ import { Feature } from './features/entities/feature.entity'; // использ�
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_DATABASE'),
-        // Если вы вернули автоматическое сканирование:
+
+        // --- ИСПРАВЛЕНИЕ ЗДЕСЬ ---
+        // Перечисляем ВСЕ сущности
+        entities: [
+            Tour,
+            Weekday,
+            Feature,
+            Booking,
+            BookingStatus,
+            ContactMethod,
+            Category 
+        ],
+        // Или верните авто-сканирование, если уверены, что нет "лишних" .entity файлов
         // entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-        // Если используете явное перечисление:
-        entities: [Tour, Weekday, Feature],
+        // ------------------------
+
         synchronize: true,
-        logging: true, // Оставим логирование включенным для отладки
+        logging: true,
       }),
     }),
-    ToursModule, // Теперь TypeScript знает, что это такое
+    ToursModule,
+    BookingsModule,
+    CategoriesModule, 
   ],
-  controllers: [AppController], // И это тоже
-  providers: [AppService],    // И это
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

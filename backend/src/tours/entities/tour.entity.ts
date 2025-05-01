@@ -1,15 +1,20 @@
-// src/tours/entities/tour.entity.ts
+
 import {
     Entity,
     PrimaryGeneratedColumn,
     Column,
     CreateDateColumn,
     UpdateDateColumn,
-    ManyToMany, // Импортируем ManyToMany
-    JoinTable,  // Импортируем JoinTable
+    ManyToMany, 
+    JoinTable, 
+    OneToMany,
+    ManyToOne, 
+    JoinColumn,
   } from 'typeorm';
-  import { Weekday } from '../../weekdays/entities/weekday.entity'; // Импорт Weekday
-  import { Feature } from '../../features/entities/feature.entity'; // Импорт Feature
+  import { Booking } from '../../bookings/entities/booking.entity';
+  import { Weekday } from '../../weekdays/entities/weekday.entity'; 
+  import { Feature } from '../../features/entities/feature.entity'; 
+  import { Category } from '../../categories/entities/category.entity';   
   
   @Entity('tours')
   export class Tour {
@@ -55,6 +60,8 @@ import {
     })
     operationDays: Weekday[]; // Массив дней, когда тур проводится
   
+
+    
     // Связь Многие-ко-Многим с Услугами
     @ManyToMany(() => Feature, { cascade: ['insert'] })
     @JoinTable({
@@ -69,10 +76,25 @@ import {
       },
     })
     features: Feature[]; // Массив включенных услуг
+
+    @OneToMany(() => Booking, booking => booking.tour)
+    bookings: Booking[];
   
     @CreateDateColumn()
     createdAt: Date;
   
     @UpdateDateColumn()
     updatedAt: Date;
+
+
+    @ManyToOne(() => Category, category => category.tours, {
+      nullable: true, // Разрешить туру быть без категории? Решите сами.
+      eager: true,    // Автоматически загружать категорию при запросе тура
+      onDelete: 'SET NULL' // или 'RESTRICT' если тур не может быть без категории
+ })
+ @JoinColumn({ name: 'categoryId' }) 
+ category?: Category; 
+
+ @Column({ nullable: true }) 
+ categoryId?: number;
   }

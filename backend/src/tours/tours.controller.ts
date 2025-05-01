@@ -1,17 +1,22 @@
 // src/tours/tours.controller.ts
-import { Controller, Get, Param, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Param, ParseUUIDPipe , Query } from '@nestjs/common';
 import { ToursService } from './tours.service';
 import { Tour } from './entities/tour.entity';
+import { FindToursQueryDto } from './dto/find-tours-query.dto'; // Импорт DTO
 
 @Controller('tours') // Базовый путь для всех эндпоинтов в этом контроллере будет /tours
 export class ToursController {
   constructor(private readonly toursService: ToursService) {}
 
   @Get() // Обработчик для GET /tours
-  findAll(): Promise<Tour[]> {
-    console.log('Fetching all tours...'); // Для отладки
-    return this.toursService.findAll();
+  async findAll(@Query() query: FindToursQueryDto): Promise<{ data: Tour[], total: number }> {
+    console.log('Fetching tours with query:', query);
+    return this.toursService.findAllPaginated(query); // Вызываем новый метод сервиса
   }
+
+  // Метод findOne остается без изменений
+  // @Get(':id') ...
+
 
   // Эндпоинт для получения одного тура по ID
   // ParseUUIDPipe автоматически проверит, что id - это валидный UUID

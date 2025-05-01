@@ -7,11 +7,11 @@ export interface Weekday {
     shortName: string;
   }
   
-  // Тип для включенной услуги (соответствует Feature entity)
+
   export interface Feature {
     id: number;
     name: string;
-    icon?: string; // Иконка может быть необязательной
+    icon?: string; 
   }
   
   // Основной тип для Тура (соответствует Tour entity и данным из API)
