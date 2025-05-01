@@ -1,4 +1,4 @@
-// src/categories/entities/category.entity.ts
+
 import { Tour } from '../../tours/entities/tour.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, Index } from 'typeorm';
 
@@ -9,10 +9,10 @@ export class Category {
 
  
   @Column({ type: 'varchar', length: 100, unique: true })
-  name: string; // 'Активные', 'Морские', 'Исторические'
+  name: string; 
 
   @Column({ type: 'varchar', length: 150, unique: true })
-  slug: string; // 'active', 'sea', 'historical' (для URL и фильтрации)
+  slug: string; 
 
   @OneToMany(() => Tour, tour => tour.category)
   tours: Tour[];

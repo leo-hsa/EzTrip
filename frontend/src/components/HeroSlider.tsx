@@ -1,5 +1,5 @@
-// src/components/HeroSlider.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 
 interface SlideData {
   id: number;
@@ -12,13 +12,10 @@ interface SlideData {
   button2Link?: string;
 }
 
-// --- ВНИМАТЕЛЬНО ПРОВЕРЬТЕ И ЗАМЕНИТЕ ИМЕНА ФАЙЛОВ ---
 const slidesData: SlideData[] = [
   {
     id: 1,
-    // Пример: если ваш файл называется cappadocia-main.jpg
-    // imageUrl: '/images/slider/cappadocia-main.jpg',
-    imageUrl: '/images/slider/slide1.jpg', // <-- ЗАМЕНИТЕ НА РЕАЛЬНОЕ ИМЯ И РАСШИРЕНИЕ
+    imageUrl: '/images/slider/slide1.jpg',
     title: 'Тур в Каппадокию',
     subtitle: 'Ваше воздушное приключение',
     button1Text: 'О Каппадокии',
@@ -28,9 +25,7 @@ const slidesData: SlideData[] = [
   },
   {
     id: 2,
-    // Пример: если ваш файл называется paris-evening.png
-    // imageUrl: '/images/slider/paris-evening.png',
-    imageUrl: '/images/slider/slide2.jpg', // <-- ЗАМЕНИТЕ НА РЕАЛЬНОЕ ИМЯ И РАСШИРЕНИЕ
+    imageUrl: '/images/slider/slide2.jpg',
     title: 'Выходные в Париже',
     subtitle: 'Романтика у Эйфелевой башни',
     button1Text: 'Подробнее',
@@ -40,9 +35,7 @@ const slidesData: SlideData[] = [
   },
   {
     id: 3,
-    // Пример: если ваш файл называется rome-colosseum.webp
-    // imageUrl: '/images/slider/rome-colosseum.webp',
-    imageUrl: '/images/slider/slide3.jpg', // <-- ЗАМЕНИТЕ НА РЕАЛЬНОЕ ИМЯ И РАСШИРЕНИЕ
+    imageUrl: '/images/slider/slide3.jpg',
     title: 'Величие Древнего Рима',
     subtitle: 'Колизей, Форум и история веков',
     button1Text: 'Узнать больше',
@@ -64,28 +57,28 @@ const HeroSlider: React.FC = () => {
   };
 
   return (
-    <div className="relative w-full h-[80vh] overflow-hidden bg-gray-900"> {}
+    <div className="relative w-full h-[75vh] md:h-[85vh] overflow-hidden">
       <div className="relative w-full h-full">
         {slidesData.map((slide, index) => (
           <div
             key={slide.id}
-            className={`absolute inset-0 w-full h-full bg-cover bg-center transition-opacity duration-1000 ease-in-out ${ // Добавили bg-cover bg-center
+            className={`absolute inset-0 w-full h-full bg-cover bg-center transition-opacity duration-1000 ease-in-out ${
               index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
             }`}
             style={{ backgroundImage: `url(${slide.imageUrl})` }}
           >
-            <div className="absolute inset-0 bg-opacity-40 flex flex-col items-center justify-center text-center p-4">
-              <h1 className="text-white text-4xl md:text-6xl font-bold mb-4 drop-shadow-md">
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 bg-black/40">
+              <h1 className="text-white text-4xl sm:text-5xl md:text-6xl font-bold mb-4 drop-shadow-lg">
                 {slide.title}
               </h1>
-              <p className="text-white text-lg md:text-xl mb-8 drop-shadow-md">
+              <p className="text-white text-lg md:text-xl mb-8 drop-shadow-lg max-w-xl">
                 {slide.subtitle}
               </p>
-              <div>
+              <div className="space-x-4">
                 {slide.button1Text && (
                   <a
                     href={slide.button1Link || '#'}
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded transition duration-300 ease-in-out mr-4"
+                    className="inline-block bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-6 rounded transition duration-300 ease-in-out shadow-md text-sm md:text-base"
                   >
                     {slide.button1Text}
                   </a>
@@ -93,7 +86,7 @@ const HeroSlider: React.FC = () => {
                 {slide.button2Text && (
                   <a
                     href={slide.button2Link || '#'}
-                    className="bg-gray-700 hover:bg-gray-800 text-white font-semibold py-2 px-6 rounded transition duration-300 ease-in-out"
+                    className="inline-block bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-6 rounded transition duration-300 ease-in-out shadow-md text-sm md:text-base"
                   >
                     {slide.button2Text}
                   </a>
@@ -104,39 +97,21 @@ const HeroSlider: React.FC = () => {
         ))}
       </div>
 
-      {/* Кнопки и точки навигации остаются без изменений */}
-       <button
-        onClick={goToPrevious}
-        aria-label="Previous Slide"
-        className="absolute top-1/2 left-4 transform -translate-y-1/2 z-20 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition-opacity duration-300"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-        </svg>
-      </button>
-
       <button
-        onClick={goToNext}
-        aria-label="Next Slide"
-        className="absolute top-1/2 right-4 transform -translate-y-1/2 z-20 bg-black bg-opacity-50 text-white p-3 rounded-full hover:bg-opacity-75 transition-opacity duration-300"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
+  onClick={goToPrevious}
+  aria-label="Previous Slide"
+  className="absolute top-1/2 left-6 transform -translate-y-1/2 z-20 text-white hover:text-teal-300 transition duration-300 cursor-pointer"
+>
+  <ChevronLeftIcon className="h-10 w-10" />
+</button>
 
-      <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2 z-20 flex space-x-2">
-          {slidesData.map((_, index) => (
-              <button
-                  key={index}
-                  onClick={() => setCurrentSlide(index)}
-                  aria-label={`Go to slide ${index + 1}`}
-                  className={`w-3 h-3 rounded-full ${
-                      index === currentSlide ? 'bg-white' : 'bg-gray-400 bg-opacity-50'
-                  } hover:bg-white transition-colors duration-300`}
-              />
-          ))}
-      </div>
+<button
+  onClick={goToNext}
+  aria-label="Next Slide"
+  className="absolute top-1/2 right-6 transform -translate-y-1/2 z-20 text-white hover:text-teal-300 transition duration-300 cursor-pointer"
+>
+  <ChevronRightIcon className="h-10 w-10" />
+</button>
     </div>
   );
 };

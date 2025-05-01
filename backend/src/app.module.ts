@@ -18,6 +18,7 @@ import { Booking } from './bookings/entities/booking.entity';
 import { BookingStatus } from './bookings/entities/booking-status.entity';
 import { ContactMethod } from './bookings/entities/contact-method.entity';
 import { Category } from './categories/entities/category.entity';
+import { AuthModule } from './auth/auth.module';
 
 
 
@@ -60,7 +61,8 @@ import { Category } from './categories/entities/category.entity';
     }),
     ToursModule,
     BookingsModule,
-    CategoriesModule, 
+    CategoriesModule,
+    AuthModule, 
   ],
   controllers: [AppController],
   providers: [AppService],

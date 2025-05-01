@@ -22,50 +22,57 @@ import {
     id: string;
   
     @Column({ length: 255 })
-    title: string; // "Каппадокия «премиум»"
+    title: string; 
   
-    @Column('text', { nullable: true }) // Описание может быть необязательным на карточке
+    @Column('text', { nullable: true }) 
     description: string;
   
     @Column({ length: 100 })
-    location: string; // "Каппадокия"
+    location: string; 
   
     @Column({ type: 'varchar', length: 50 })
-    durationText: string; // "2 дня"
+    durationText: string; 
   
     @Column('decimal', { precision: 10, scale: 2 })
-    price: number; // 115.00
+    price: number; 
   
     @Column({ type: 'varchar', length: 3, default: 'USD' })
-    priceCurrency: string; // "USD"
+    priceCurrency: string; 
   
-    @Column({ type: 'varchar', length: 50, default: 'per_person' }) // 'per_person' или 'per_group'
-    priceUnit: string; // "с человека" -> per_person
+    @Column({ type: 'varchar', length: 50, default: 'per_person' }) 
+    priceUnit: string; 
   
-    @Column({ nullable: true })
-    imageUrl?: string;
+    @Column({ nullable: true, name: 'card_image_url' }) 
+  cardImageUrl?: string;
+
+  @Column({
+    type: 'simple-json', 
+    nullable: true,
+  })
+  galleryImageUrls?: string[]; 
+
   
-    // Связь Многие-ко-Многим с Днями Недели
-    @ManyToMany(() => Weekday, { cascade: ['insert'] }) // cascade: ['insert'] может быть полезен при создании
+    
+    @ManyToMany(() => Weekday, { cascade: ['insert'] }) 
     @JoinTable({
-      name: 'tour_operation_days', // Имя связующей таблицы
-      joinColumn: { // Колонка в связующей таблице, ссылающаяся на Tour
+      name: 'tour_operation_days', 
+      joinColumn: { 
         name: 'tour_id',
         referencedColumnName: 'id',
       },
-      inverseJoinColumn: { // Колонка в связующей таблице, ссылающаяся на Weekday
+      inverseJoinColumn: { 
         name: 'weekday_id',
         referencedColumnName: 'id',
       },
     })
-    operationDays: Weekday[]; // Массив дней, когда тур проводится
+    operationDays: Weekday[]; 
   
 
     
-    // Связь Многие-ко-Многим с Услугами
+    
     @ManyToMany(() => Feature, { cascade: ['insert'] })
     @JoinTable({
-      name: 'tour_features', // Имя связующей таблицы
+      name: 'tour_features', 
       joinColumn: {
         name: 'tour_id',
         referencedColumnName: 'id',
@@ -75,7 +82,7 @@ import {
         referencedColumnName: 'id',
       },
     })
-    features: Feature[]; // Массив включенных услуг
+    features: Feature[]; 
 
     @OneToMany(() => Booking, booking => booking.tour)
     bookings: Booking[];
@@ -88,9 +95,9 @@ import {
 
 
     @ManyToOne(() => Category, category => category.tours, {
-      nullable: true, // Разрешить туру быть без категории? Решите сами.
-      eager: true,    // Автоматически загружать категорию при запросе тура
-      onDelete: 'SET NULL' // или 'RESTRICT' если тур не может быть без категории
+      nullable: true, 
+      eager: true,    
+      onDelete: 'SET NULL' 
  })
  @JoinColumn({ name: 'categoryId' }) 
  category?: Category; 

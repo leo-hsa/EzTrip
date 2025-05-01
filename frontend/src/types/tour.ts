@@ -16,17 +16,22 @@ export interface Weekday {
   
   // Основной тип для Тура (соответствует Tour entity и данным из API)
   export interface Tour {
-    id: string; // uuid
+    id: string;
     title: string;
-    description: string | null; // Может быть null
+    description: string | null;
     location: string;
     durationText: string;
-    price: number; // Число (TypeORM преобразует DECIMAL в number)
-    priceCurrency: string; // 'USD', 'EUR' etc.
-    priceUnit: string; // 'per_person', 'per_group'
-    imageUrl?: string | null; // Может отсутствовать
-    operationDays: Weekday[]; // Массив дней проведения
-    features: Feature[];      // Массив включенных услуг
-    createdAt: string; // Дата в виде строки (ISO формат)
-    updatedAt: string; // Дата в виде строки (ISO формат)
+    price: number;
+    priceCurrency: string;
+    priceUnit: string;
+    
+    imageUrl?: string | null;
+    galleryImageUrls?: string[]; // Массив URL для галереи (может отсутствовать)
+    operationDays: Weekday[];
+    features: Feature[];
+   
+    category?: { id: number; name: string; slug: string; };
+    createdAt: string;
+    updatedAt: string;
+
   }
