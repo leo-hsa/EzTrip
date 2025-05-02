@@ -11,8 +11,8 @@ import { HttpStrategy } from './strategies/http.strategy';
   ],
   providers: [
     HttpStrategy, // Регистрируем нашу стратегию
-    // AuthService, LocalStrategy, JwtStrategy здесь не нужны для Basic Auth
+   
   ],
-  exports: [PassportModule], // Экспортируем PassportModule, если он нужен в других модулях
+  exports: [PassportModule], 
 })
 export class AuthModule {}

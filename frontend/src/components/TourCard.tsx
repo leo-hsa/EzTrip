@@ -1,100 +1,142 @@
 import React from 'react';
-import { Tour } from '../types/tour';
-// Импортируем иконки
-import { MapPinIcon, CalendarDaysIcon, CheckIcon, StarIcon } from '@heroicons/react/24/outline';
-// Для звезд лучше использовать solid версию
+import { Link } from 'react-router-dom';
+import { Tour, Weekday, Feature } from '../types';
+import {
+    MapPinIcon,
+    CalendarDaysIcon,
+    CheckIcon,
+    UserGroupIcon,
+    TruckIcon,
+    TicketIcon,
+    BuildingOffice2Icon,
+    PaperAirplaneIcon,
+    LifebuoyIcon,
+    ShoppingBagIcon,
+    UserIcon,
+} from '@heroicons/react/24/outline';
 import { StarIcon as StarIconSolid } from '@heroicons/react/24/solid';
 
 interface TourCardProps {
   tour: Tour;
 }
 
-// Компонент для звезд рейтинга
+interface InfoLineProps {
+  icon: React.ElementType;
+  text: string | React.ReactNode;
+}
+const InfoLine: React.FC<InfoLineProps> = ({ icon: Icon, text }) => (
+  <div className="flex items-center text-xs text-gray-600 mb-1">
+    <Icon className="w-4 h-4 mr-1.5 text-gray-400 flex-shrink-0" />
+    <span>{text}</span>
+  </div>
+);
+
+interface FeatureLineProps {
+  feature: Feature;
+}
+const featureIconMap: { [key: string]: React.ElementType } = {
+    'transfer': TruckIcon,
+    'tickets': TicketIcon,
+    'guide': UserIcon,
+    'food': ShoppingBagIcon,
+    'hotel': BuildingOffice2Icon,
+    'flight': PaperAirplaneIcon,
+    'yacht': LifebuoyIcon,
+    'default': CheckIcon,
+};
+const FeatureLine: React.FC<FeatureLineProps> = ({ feature }) => {
+    const getIconByName = (name: string): React.ElementType => {
+        const lowerName = name.toLowerCase();
+        if (lowerName.includes('трансфер')) return featureIconMap['transfer'];
+        if (lowerName.includes('билет')) return featureIconMap['tickets'];
+        if (lowerName.includes('гид')) return featureIconMap['guide'];
+        if (lowerName.includes('обед') || lowerName.includes('завтрак') || lowerName.includes('ужин') || lowerName.includes('питание')) return featureIconMap['food'];
+        if (lowerName.includes('отел')) return featureIconMap['hotel'];
+        if (lowerName.includes('перелет')) return featureIconMap['flight'];
+        if (lowerName.includes('яхт')) return featureIconMap['yacht'];
+        return featureIconMap['default'];
+    };
+    const IconComponent = getIconByName(feature.name);
+    return (
+      <div className="flex items-center text-xs text-gray-700">
+        <IconComponent className="w-4 h-4 mr-1.5 text-gray-400 flex-shrink-0" />
+        <span title={feature.name}>{feature.name}</span>
+      </div>
+    );
+};
+
 const StarRating: React.FC<{ rating?: number }> = ({ rating = 5 }) => (
     <div className="flex text-yellow-400">
-        {[...Array(5)].map((_, i) => (
-            // Отображаем solid иконку
-            <StarIconSolid key={i} className="h-4 w-4" />
-            // Если нужно будет показывать рейтинг (например 4.5),
-            // потребуется более сложная логика с частичным заполнением или разными иконками
-        ))}
+        {[...Array(5)].map((_, i) => ( <StarIconSolid key={i} className="h-4 w-4" /> ))} {/* Можете заменить на динамическое */}
     </div>
 );
 
 const TourCard: React.FC<TourCardProps> = ({ tour }) => {
+  const imgUrl = tour.cardImageUrl ?? tour.cardImageUrl ?? ''; 
+  const operationDays = tour.operationDays ?? [];
+  const features = tour.features ?? [];
+
   return (
-    <div className="flex flex-col bg-white rounded-lg overflow-hidden shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-300 ease-in-out h-full">
-      {/* Изображение */}
-      <div className="relative w-full h-48 flex-shrink-0">
-        {tour.imageUrl ? (
-          <img src={tour.imageUrl} alt={`Фото ${tour.title}`} className="w-full h-full object-cover" loading="lazy"/>
-        ) : (
-          <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-sm">Фото нет</div>
-        )}
-         {tour.category && tour.category.name && (
-             <span className="absolute top-2 right-2 bg-teal-500 text-white text-xs font-semibold px-2 py-1 rounded shadow"> {/* Бирюзовый */}
-                 {tour.category.name}
-             </span>
-         )}
-      </div>
+    <div className="flex flex-col bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out border border-gray-100 h-full group">
+        <Link to={`/tours/${tour.id}`} className="block relative w-full h-48 flex-shrink-0 overflow-hidden">
+            {imgUrl ? (
+              <img src={imgUrl} alt={`Фото ${tour.title}`} className="w-full h-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105" loading="lazy" />
+            ) : (
+              <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-sm">Фото нет</div>
+            )}
+            {tour.category?.name && (
+              <span className="absolute top-2 right-2 bg-teal-500 text-white text-xs font-semibold px-2 py-1 rounded shadow z-10">
+                {tour.category.name}
+              </span>
+            )}
+        </Link>
 
-       {/* Блок с иконками под фото */}
-       <div className="px-4 py-2 border-b border-gray-200 flex items-center justify-start flex-wrap gap-x-4 gap-y-1 text-xs text-gray-600"> {/* Добавили flex-wrap и gap */}
-            <span className="flex items-center whitespace-nowrap">
-                <MapPinIcon className="h-4 w-4 mr-1 text-teal-600 flex-shrink-0"/> {/* Бирюзовый */}
-                {tour.location || 'N/A'}
-            </span>
-             <span className="flex items-center whitespace-nowrap">
-                <CalendarDaysIcon className="h-4 w-4 mr-1 text-teal-600 flex-shrink-0"/> {/* Бирюзовый */}
-                {tour.durationText || 'N/A'}
-            </span>
-             {/* Пример для группы (если будет поле) */}
-             {/* <span className="flex items-center whitespace-nowrap">
-                 <UsersIcon className="h-4 w-4 mr-1 text-teal-600"/>
-                 {tour.groupSize || 'N/A'} Person
-             </span> */}
-       </div>
+      <div className="p-5 flex flex-col flex-grow">
+        <Link to={`/tours/${tour.id}`} className="block mb-3">
+            <h3 className="text-xl font-semibold text-gray-900 leading-tight group-hover:text-teal-600 transition-colors">
+              {tour.title}
+            </h3>
+        </Link>
 
-      {/* Основной контент */}
-      <div className="p-4 flex flex-col flex-grow">
-        <div className="flex justify-between items-center mb-2">
-            {/* Используем h4 т.к. h3 уже был выше */}
-            <h4 className="text-xl font-bold text-gray-800">
-                {typeof tour.price === 'number' ? (
-                     new Intl.NumberFormat('en-US', { style: 'currency', currency: tour.priceCurrency || 'USD', minimumFractionDigits: 0 }).format(tour.price)
-                ) : ('По запросу')}
-            </h4>
-            <StarRating />
+        <div className="mb-3">
+            <InfoLine icon={CalendarDaysIcon} text={tour.durationText || 'Не указана'} />
+            <InfoLine
+              icon={UserGroupIcon}
+              text={
+                operationDays.length > 0
+                  ? operationDays.map((day: Weekday) => day.shortName).join(', ')
+                  : 'Уточняйте у менеджера'
+              }
+            />
         </div>
 
-        {/* Текст "В стоимость тура входит" и список */}
-        {tour.features && tour.features.length > 0 && (
-            <>
-                <p className="text-xs text-gray-500 mb-1 mt-2">В стоимость тура входит:</p>
-                <ul className="text-xs text-gray-600 space-y-1 mb-3">
-                    {tour.features.slice(0, 2).map((feature) => ( // Показываем 2
-                        <li key={feature.id} className="flex items-center">
-                            <CheckIcon className="h-4 w-4 mr-1.5 text-teal-500 flex-shrink-0" /> {/* Бирюзовый */}
-                            <span className="truncate" title={feature.name}>{feature.name}</span>
-                        </li>
-                    ))}
-                    {tour.features.length > 2 && (
-                        <li className='text-gray-500 italic text-xs'>... и другое</li>
-                    )}
-                </ul>
-            </>
+        {features.length > 0 && (
+          <div className="mb-4">
+              <p className="text-sm font-medium text-gray-800 mb-2">В стоимость тура входит:</p>
+              <ul className="space-y-1.5">
+                  {features.slice(0, 4).map((feature: Feature) => (
+                      <li key={feature.id}>
+                          <FeatureLine feature={feature} />
+                      </li>
+                  ))}
+                  {features.length > 4 && (
+                      <li className='text-gray-500 italic text-xs mt-1'>... и другое</li>
+                  )}
+              </ul>
+          </div>
         )}
 
-        {/* Кнопки действий */}
-        <div className="mt-auto pt-3 border-t border-gray-100 flex space-x-2">
-            {/* Кнопка Read More - стиль как на примере (светлая) */}
-            <a href={`/tours/${tour.id}`} className="flex-1 text-center bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold py-2 px-3 rounded-md transition duration-300">
-                {tour.category?.name ? `О ${tour.category.name}` : 'Подробнее'}
-            </a>
-             {/* Кнопка Book Now - коралловый (оранжевый) */}
-            <a href={`/booking?tourId=${tour.id}`} className="flex-1 text-center bg-orange-500 hover:bg-orange-600 text-white text-xs font-semibold py-2 px-3 rounded-md transition duration-300">
-                Заказать тур
-            </a>
+        <div className="flex justify-start items-center mt-auto pt-3">
+            <p className="text-3xl font-bold text-gray-900 mr-2">
+                {typeof tour.price === 'string' || typeof tour.price === 'number'
+                  ? `$${new Intl.NumberFormat('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(Number(tour.price))}`
+                  : 'По запросу'}
+            </p>
+            {(tour.price && tour.priceUnit) && (
+              <span className="text-sm text-gray-500 self-end pb-1">
+                  {tour.priceUnit === 'per_person' ? 'с человека' : '/ за группу'}
+              </span>
+            )}
         </div>
       </div>
     </div>

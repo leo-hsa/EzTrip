@@ -25,7 +25,7 @@ export interface Weekday {
     priceCurrency: string;
     priceUnit: string;
     
-    imageUrl?: string | null;
+    cardImageUrl?: string | null;
     galleryImageUrls?: string[]; // Массив URL для галереи (может отсутствовать)
     operationDays: Weekday[];
     features: Feature[];

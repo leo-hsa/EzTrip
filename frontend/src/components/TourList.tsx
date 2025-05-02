@@ -4,164 +4,138 @@ import { Tour, Category } from '../types';
 import { FindToursQueryDto, TourSortBy } from '../types/dto';
 import { fetchTours, fetchCategories } from '../services/api';
 import TourCard from './TourCard';
-import useDebounce from '../hooks/useDebounce'; // Импортируем хук debounce
+import useDebounce from '../hooks/useDebounce';
 
-const PAGE_LIMIT = 6; // Количество туров на странице/загрузке
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+
+const PAGE_LIMIT = 6;
 
 const TourList: React.FC = () => {
-  // --- Состояния данных ---
+
   const [tours, setTours] = useState<Tour[]>([]);
   const [totalTours, setTotalTours] = useState<number>(0);
   const [categories, setCategories] = useState<Category[]>([]);
-
-  // --- Состояния UI ---
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingMore, setLoadingMore] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [offset, setOffset] = useState<number>(0); // Текущее смещение
+  const [offset, setOffset] = useState<number>(0);
+  const [searchInput, setSearchInput] = useState<string>('');
+  const debouncedSearchTerm = useDebounce(searchInput, 500);
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [sortBy, setSortBy] = useState<TourSortBy>(TourSortBy.DATE_DESC); 
 
-  // --- Состояния Фильтров/Сортировки ---
-  const [searchInput, setSearchInput] = useState<string>(''); // Значение прямо из инпута
-  const debouncedSearchTerm = useDebounce(searchInput, 500); // Дебаунс значения поиска (500ms)
-  const [selectedCategory, setSelectedCategory] = useState<string>(''); // slug
-  const [sortBy, setSortBy] = useState<TourSortBy>(TourSortBy.DATE_DESC);
-  // TODO: Добавить стейты для min/max Price
-
-  // --- Загрузка категорий ---
+  // --- Загрузка категорий (без изменений) ---
   useEffect(() => {
-    let isMounted = true; // Флаг для предотвращения обновления состояния на размонтированном компоненте
+    let isMounted = true;
     const loadCategories = async () => {
       try {
         const fetchedCategories = await fetchCategories();
-        if (isMounted) {
-          setCategories(fetchedCategories);
-        }
-      } catch (err: any) {
-        console.error('Failed to load categories:', err.message);
-      }
+        if (isMounted) setCategories(fetchedCategories);
+      } catch (err: any) { console.error("Failed to load categories:", err.message); }
     };
     loadCategories();
-    return () => { isMounted = false; }; // Очистка при размонтировании
+    return () => { isMounted = false; };
   }, []);
 
-  // --- Функция загрузки туров ---
-  // useCallback используется для предотвращения лишних пересозданий функции
+  // --- Функция загрузки туров (без изменений) ---
   const loadTours = useCallback(async (loadMore = false) => {
-      const currentOffset = loadMore ? offset : 0; // Используем текущий offset для дозагрузки
+      const currentOffset = loadMore ? offset : 0;
       const isLoadingInitial = !loadMore;
-
       if (isLoadingInitial) setLoading(true); else setLoadingMore(true);
       setError(null);
-
       const params: FindToursQueryDto = {
-          limit: PAGE_LIMIT,
-          offset: currentOffset,
-          sortBy: sortBy,
+          limit: PAGE_LIMIT, offset: currentOffset, sortBy: sortBy,
           ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
           ...(selectedCategory && { category: selectedCategory }),
-          // TODO: Добавить параметры цен
       };
-
       try {
           const { data, total } = await fetchTours(params);
           setTours(prev => isLoadingInitial ? data : [...prev, ...data]);
           setTotalTours(total);
-          setOffset(currentOffset + data.length); // Обновляем смещение на основе полученных данных
+          setOffset(currentOffset + data.length);
       } catch (err: any) {
           setError(err.message || 'Не удалось загрузить туры.');
           console.error(err);
-          if (isLoadingInitial) { // Сбрасываем только при основной загрузке
-              setTours([]);
-              setTotalTours(0);
-              setOffset(0);
-          }
+          if (isLoadingInitial) { setTours([]); setTotalTours(0); setOffset(0); }
       } finally {
          if (isLoadingInitial) setLoading(false); else setLoadingMore(false);
       }
-  // Зависимости useCallback: при их изменении функция будет создана заново
-  }, [offset, sortBy, debouncedSearchTerm, selectedCategory]);
+  }, [offset, sortBy, debouncedSearchTerm, selectedCategory]); // Добавили loadTours в зависимости useCallback неявно
 
-  // --- useEffect для (пере)загрузки при смене фильтров ---
-  // Запускается при изменении дебаунсированного поиска, категории или сортировки
+   // --- useEffect для (пере)загрузки при смене фильтров (без изменений) ---
   useEffect(() => {
-      // Вызываем loadTours БЕЗ флага loadMore, что сбросит offset и tours
-      loadTours(false);
-  // Не добавляем loadTours в зависимости, т.к. он сам зависит от этих же параметров
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearchTerm, selectedCategory, sortBy]);
+    loadTours(false);
+  }, [debouncedSearchTerm, selectedCategory, sortBy, loadTours]); // Добавили loadTours
 
-
-  // --- Обработчик "Загрузить еще" ---
   const handleLoadMore = () => {
-    // Загружаем еще, только если не идет загрузка и есть еще туры
     if (!loadingMore && !loading && tours.length < totalTours) {
       loadTours(true);
     }
   };
 
-  // Мемоизация для определения, есть ли еще туры для загрузки
   const hasMoreTours = useMemo(() => tours.length < totalTours, [tours.length, totalTours]);
 
-  // --- Рендеринг Компонента ---
+  
   return (
     <div>
-      {/* Панель Фильтров */}
-      <div className="mb-8 p-4 bg-white rounded-lg shadow border border-gray-200 flex flex-col sm:flex-row flex-wrap gap-4 items-center">
-        <div className="w-full sm:w-auto sm:flex-grow lg:flex-grow-0 lg:w-1/3">
-          <label htmlFor="search-input" className="sr-only">Поиск</label> {/* Label для доступности */}
-          <input
-            id="search-input"
-            type="text"
-            placeholder="Поиск по названию..."
-            value={searchInput} // Управляем инпутом через searchInput
-            onChange={(e) => setSearchInput(e.target.value)} // Обновляем searchInput немедленно
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-lime-500 focus:border-lime-500"
-          />
-        </div>
-        <div className="w-full sm:w-auto sm:flex-grow-0">
-          <label htmlFor="category-select" className="sr-only">Категория</label>
-          <select
-            id="category-select"
-            value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-lime-500 focus:border-lime-500 bg-white"
-          >
-            <option value="">Все категории</option>
-            {categories.map(cat => (
-              <option key={cat.id} value={cat.slug}>{cat.name}</option>
-            ))}
-          </select>
-        </div>
-        <div className="w-full sm:w-auto sm:flex-grow-0">
-           <label htmlFor="sort-select" className="sr-only">Сортировка</label>
-           <select
-             id="sort-select"
-             value={sortBy}
-             onChange={(e) => setSortBy(e.target.value as TourSortBy)}
-             className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-lime-500 focus:border-lime-500 bg-white"
-           >
-             <option value={TourSortBy.DATE_DESC}>Сначала новые</option>
-             <option value={TourSortBy.PRICE_ASC}>Цена: по возрастанию</option>
-             <option value={TourSortBy.PRICE_DESC}>Цена: по убыванию</option>
-           </select>
-        </div>
-         {/* TODO: Добавить фильтры по цене */}
+  
+      <div className="mb-6 relative ">
+        <input
+          id="search-input"
+          type="text"
+          placeholder="Поиск туров по названию..."
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
+          className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-full text-base shadow-sm focus:outline-none focus:ring-2 focus:ring-lime-500 focus:border-transparent placeholder-gray-400" // rounded-full
+        />
+        <MagnifyingGlassIcon className="h-5 w-5 text-gray-400 absolute left-4 top-1/2 transform -translate-y-1/2" /> 
       </div>
 
-      {/* --- Отображение Загрузки / Ошибки / Списка --- */}
+    
+      <div className="mb-8 overflow-x-auto pb-2"> 
+          <div className="flex space-x-2 sm:justify-center"> 
+            <button
+              onClick={() => setSelectedCategory('')}
+              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+                selectedCategory === ''
+                  ? 'bg-lime-600 text-white' 
+                  : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200' 
+              }`}
+            >
+              Все туры
+            </button>
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => setSelectedCategory(cat.slug)}
+                 className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+                  selectedCategory === cat.slug
+                    ? 'bg-lime-600 text-white'
+                    : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
+                 }`}
+              >
+                {cat.name}
+              </button>
+            ))}
+        </div>
+      </div>
+      
+
+
+     
       {loading && <div className="text-center p-10 text-gray-500">Загрузка туров...</div>}
 
-      {error && !loading && ( // Показываем ошибку только если нет основной загрузки
+      {error && !loading && (
         <div className="text-center p-6 text-red-700 bg-red-100 rounded border border-red-300">{error}</div>
       )}
 
-      {!loading && !error && tours.length === 0 && ( // Сообщение "не найдено"
-           <p className="col-span-full text-center text-gray-500 py-10">
+      {!loading && !error && tours.length === 0 && (
+           <p className="text-center text-gray-500 py-10">
                По вашему запросу туры не найдены. Попробуйте изменить фильтры.
            </p>
       )}
 
-      {/* Сетка туров (показываем даже если идет loadingMore) */}
+     
       {tours.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {tours.map((tour) => (
@@ -170,11 +144,10 @@ const TourList: React.FC = () => {
         </div>
       )}
 
-      {/* Кнопка "Загрузить еще" и индикатор загрузки */}
-      <div className="text-center mt-10 h-16"> {/* Резервируем место */}
+     
+      <div className="text-center mt-10 h-16">
           {loadingMore && <p className="text-gray-500">Загрузка...</p> }
-
-          {!loadingMore && hasMoreTours && ( // Показываем кнопку, если есть что грузить и не идет загрузка
+          {!loadingMore && hasMoreTours && (
               <>
                   <button
                       onClick={handleLoadMore}
@@ -187,7 +160,7 @@ const TourList: React.FC = () => {
                   </p>
               </>
           )}
-           {!loadingMore && !hasMoreTours && tours.length > 0 && ( // Сообщение, что все загружено
+           {!loadingMore && !hasMoreTours && tours.length > 0 && (
                 <p className="text-sm text-gray-500">Вы посмотрели все туры</p>
             )}
       </div>

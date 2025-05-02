@@ -1,47 +1,45 @@
 import React, { useState } from 'react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 
+// Интерфейс для описания данных одного слайда
 interface SlideData {
   id: number;
   imageUrl: string;
-  title: string;
+  titleLine1: string; // Разделим заголовок на строки
+  titleLine2: string;
   subtitle: string;
-  button1Text?: string;
-  button2Text?: string;
-  button1Link?: string;
-  button2Link?: string;
+  buttonText: string;
+  buttonLink?: string;
 }
 
+// Новые данные для слайдов (ЗАМЕНИТЕ imageUrl!)
 const slidesData: SlideData[] = [
   {
     id: 1,
-    imageUrl: '/images/slider/slide1.jpg',
-    title: 'Тур в Каппадокию',
-    subtitle: 'Ваше воздушное приключение',
-    button1Text: 'О Каппадокии',
-    button2Text: 'Заказать Тур',
-    button1Link: '#about-cappadocia',
-    button2Link: '#book-tour',
+    imageUrl: '/images/slider/slide1.jpg', // <-- Укажите путь к фото Кемера
+    titleLine1: ' EzTrip',
+    titleLine2: 'Экскурсии в Кемере',
+    subtitle: 'Ваш лучший онлайн турагент',
+    buttonText: 'Забронировать',
+    buttonLink: '#booking', // Ссылка на секцию/страницу бронирования
   },
   {
     id: 2,
-    imageUrl: '/images/slider/slide2.jpg',
-    title: 'Выходные в Париже',
-    subtitle: 'Романтика у Эйфелевой башни',
-    button1Text: 'Подробнее',
-    button2Text: 'Выбрать даты',
-    button1Link: '#paris-details',
-    button2Link: '#paris-booking',
+    imageUrl: '/images/slider/slide2.jpg', // <-- Укажите путь к фото Каппадокии
+    titleLine1: 'Незабываемая',
+    titleLine2: 'Каппадокия',
+    subtitle: 'Полеты на воздушном шаре и уникальные пейзажи',
+    buttonText: 'Забронировать',
+    buttonLink: '#booking',
   },
   {
     id: 3,
-    imageUrl: '/images/slider/slide3.jpg',
-    title: 'Величие Древнего Рима',
-    subtitle: 'Колизей, Форум и история веков',
-    button1Text: 'Узнать больше',
-    button2Text: 'Забронировать',
-    button1Link: '#rome-info',
-    button2Link: '#rome-tickets',
+    imageUrl: '/images/slider/slide3.jpg', // <-- Укажите путь к фото Стамбула
+    titleLine1: 'Сокровища',
+    titleLine2: 'Стамбула',
+    subtitle: 'История и современность на берегах Босфора',
+    buttonText: 'Забронировать',
+    buttonLink: '#booking',
   },
 ];
 
@@ -57,7 +55,7 @@ const HeroSlider: React.FC = () => {
   };
 
   return (
-    <div className="relative w-full h-[75vh] md:h-[85vh] overflow-hidden">
+    <div className="relative w-full h-[60vh] sm:h-[70vh] md:h-[80vh] lg:h-screen overflow-hidden"> {/* Можно сделать высоту разной */}
       <div className="relative w-full h-full">
         {slidesData.map((slide, index) => (
           <div
@@ -67,51 +65,56 @@ const HeroSlider: React.FC = () => {
             }`}
             style={{ backgroundImage: `url(${slide.imageUrl})` }}
           >
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 bg-black/40">
-              <h1 className="text-white text-4xl sm:text-5xl md:text-6xl font-bold mb-4 drop-shadow-lg">
-                {slide.title}
+            {/* Оверлей для затемнения */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/30 to-transparent"></div> {/* Градиент снизу вверх */}
+
+            {/* Контейнер для текста и кнопки, позиционируем */}
+            <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-center text-white px-4">
+              {/* Заголовок */}
+              <h1 className="text-4xl sm:text-5xl lg:text-7xl font-bold mb-3 leading-tight drop-shadow-md">
+                {slide.titleLine1}
               </h1>
-              <p className="text-white text-lg md:text-xl mb-8 drop-shadow-lg max-w-xl">
+              <h2 className="text-4xl sm:text-5xl lg:text-7xl font-bold mb-5 leading-tight drop-shadow-md"> {/* Второй заголовок чуть ниже */}
+                {slide.titleLine2}
+              </h2>
+              {/* Подзаголовок */}
+              <p className="text-base sm:text-lg mb-8 font-light drop-shadow-sm">
                 {slide.subtitle}
               </p>
-              <div className="space-x-4">
-                {slide.button1Text && (
-                  <a
-                    href={slide.button1Link || '#'}
-                    className="inline-block bg-teal-500 hover:bg-teal-600 text-white font-semibold py-2 px-6 rounded transition duration-300 ease-in-out shadow-md text-sm md:text-base"
-                  >
-                    {slide.button1Text}
-                  </a>
-                )}
-                {slide.button2Text && (
-                  <a
-                    href={slide.button2Link || '#'}
-                    className="inline-block bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-6 rounded transition duration-300 ease-in-out shadow-md text-sm md:text-base"
-                  >
-                    {slide.button2Text}
-                  </a>
-                )}
-              </div>
+              {/* Кнопка */}
+              <a
+                href={slide.buttonLink || '#'}
+                // Ярко-желтый цвет кнопки
+                className="bg-white hover:bg-lime-600 text-black hover:text-white font-semibold py-3 px-8 rounded-lg transition duration-300 ease-in-out shadow-md text-base md:text-lg"
+              >
+                {slide.buttonText}
+              </a>
             </div>
           </div>
         ))}
       </div>
 
+      {/* Кнопка "Назад" (без фона) */}
       <button
-  onClick={goToPrevious}
-  aria-label="Previous Slide"
-  className="absolute top-1/2 left-6 transform -translate-y-1/2 z-20 text-white hover:text-teal-300 transition duration-300 cursor-pointer"
->
-  <ChevronLeftIcon className="h-10 w-10" />
-</button>
+        onClick={goToPrevious}
+        aria-label="Previous Slide"
+        // Убираем фон, увеличиваем отступ, меняем цвет при наведении
+        className="absolute top-1/2 left-4 md:left-6 transform -translate-y-1/2 z-20 text-white/70 hover:text-white transition-colors duration-300 cursor-pointer p-2"
+      >
+        <ChevronLeftIcon className="h-8 w-8 md:h-10 md:w-10" /> {/* Увеличили иконку */}
+      </button>
 
-<button
-  onClick={goToNext}
-  aria-label="Next Slide"
-  className="absolute top-1/2 right-6 transform -translate-y-1/2 z-20 text-white hover:text-teal-300 transition duration-300 cursor-pointer"
->
-  <ChevronRightIcon className="h-10 w-10" />
-</button>
+      {/* Кнопка "Вперед" (без фона) */}
+      <button
+        onClick={goToNext}
+        aria-label="Next Slide"
+         // Убираем фон, увеличиваем отступ, меняем цвет при наведении
+        className="absolute top-1/2 right-4 md:right-6 transform -translate-y-1/2 z-20 text-white/70 hover:text-white transition-colors duration-300 cursor-pointer p-2"
+      >
+        <ChevronRightIcon className="h-8 w-8 md:h-10 md:w-10" /> {/* Увеличили иконку */}
+      </button>
+
+     
     </div>
   );
 };

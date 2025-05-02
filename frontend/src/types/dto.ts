@@ -26,3 +26,14 @@ export enum TourSortBy {
     limit?: number;        // Количество элементов на странице (для пагинации)
     offset?: number;       // Смещение от начала списка (для пагинации)
   }
+
+
+  export interface CreateBookingDto {
+    customerName: string;
+    customerEmail: string;
+    customerPhone: string;
+    tourId?: string; // Опционально, если форма общая
+    preferredContactMethodName?: string; // Название способа связи
+    customerNotes?: string;
+    agreedToPolicy: boolean;
+  }

@@ -42,7 +42,7 @@ const servicesData: Service[] = [
 
 const OurServices: React.FC = () => {
   return (
-    <section className="py-12 md:py-16 bg-gray-50"> 
+    <section className="py-12 md:py-16 bg-white"> 
       <div className="container mx-auto px-4">
         <div className="text-center mb-10 md:mb-12">
           <span className="text-lime-600 font-semibold text-sm tracking-widest uppercase relative inline-block px-4">
