@@ -37,3 +37,10 @@ export enum TourSortBy {
     customerNotes?: string;
     agreedToPolicy: boolean;
   }
+
+  export interface FindCarsQueryDto {
+    search?: string;
+    // TODO: Добавить другие фильтры, если они появятся на бэкенде
+    limit?: number;
+    offset?: number;
+}

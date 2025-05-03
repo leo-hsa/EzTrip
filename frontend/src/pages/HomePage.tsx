@@ -1,21 +1,27 @@
 // src/pages/HomePage.tsx
-import React from 'react';
-import HeroSlider from '../components/HeroSlider'; 
-import TourList from '../components/TourList';   
+import React, { useState } from 'react'; // Добавили useState
+import HeroSlider from '../components/HeroSlider';
 import OurServices from '../components/OurServices';
 import EasySteps from '../components/EasySteps';
-import BookingForm from '../components/BookingForm';
+import TourList from '../components/TourList';
+import SearchModal from '../components/SearchModal'; // <-- Импортируем модалку
 
 const HomePage: React.FC = () => {
-  return (
-    <> 
-      <HeroSlider />
+  // Состояние для управления видимостью модального окна
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
 
- 
-      <div className="py-10 md:py-16 bg-gray-50"> 
-        <main className="container mx-auto px-4 ">
-      
-          <div className="text-center mb-10">
+  // Функции для открытия/закрытия модального окна
+  const openSearchModal = () => setIsSearchModalOpen(true);
+  const closeSearchModal = () => setIsSearchModalOpen(false);
+
+  return (
+    <>
+      {/* Передаем функцию открытия в HeroSlider */}
+      <HeroSlider onSearchClick={openSearchModal} />
+      <div className="py-10 md:py-16 bg-white">
+        <main className="container mx-auto px-4">
+          {/* ... заголовок ... */}
+          <div className="text-center mb-10 md:mb-12">
             <span className="text-lime-600 font-semibold text-sm tracking-widest uppercase relative inline-block px-4">
                <span className="absolute top-1/2 left-0 w-8 h-px bg-lime-300 transform -translate-y-1/2 -translate-x-full"></span>
                  ЭКСКУРСИИ
@@ -26,23 +32,16 @@ const HomePage: React.FC = () => {
             </h2>
           </div>
           <TourList />
-
-
-          <OurServices />
-
-
-          <EasySteps />
-
-
-          <section id="booking" className="py-10 md:py-16 bg-gray-100"> {/* Даем ID */}
-          <div className="container mx-auto px-4">
-               {/* Форма без ID тура */}
-              <BookingForm onSubmitSuccess={() => alert('Заявка отправлена!')} />
-          </div>
-      </section>
         </main>
       </div>
-      {/* Здесь можно добавить другие секции для главной страницы */}
+      <OurServices />
+      <EasySteps />
+
+      {/* Секция Популярных Туров */}
+      
+
+      {/* Рендерим модальное окно */}
+      <SearchModal isOpen={isSearchModalOpen} onClose={closeSearchModal} />
     </>
   );
 };

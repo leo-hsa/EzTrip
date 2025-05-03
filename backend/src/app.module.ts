@@ -9,6 +9,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CategoriesModule } from './categories/categories.module';
+import { AuthModule } from './auth/auth.module';
+import { CarsModule } from './cars/cars.module';
 
 // Импортируем ВСЕ классы сущностей
 import { Tour } from './tours/entities/tour.entity';
@@ -18,10 +20,8 @@ import { Booking } from './bookings/entities/booking.entity';
 import { BookingStatus } from './bookings/entities/booking-status.entity';
 import { ContactMethod } from './bookings/entities/contact-method.entity';
 import { Category } from './categories/entities/category.entity';
-import { AuthModule } from './auth/auth.module';
-
-
-
+import { Car } from './cars/entities/car.entity'; // <-- Убедитесь, что импорт есть
+import { CarFeature } from './cars/entities/car-feature.entity'; // <-- Убедитесь, что импорт есть
 
 @Module({
   imports: [
@@ -41,7 +41,6 @@ import { AuthModule } from './auth/auth.module';
         database: configService.get<string>('DB_DATABASE'),
 
         // --- ИСПРАВЛЕНИЕ ЗДЕСЬ ---
-        // Перечисляем ВСЕ сущности
         entities: [
             Tour,
             Weekday,
@@ -49,9 +48,11 @@ import { AuthModule } from './auth/auth.module';
             Booking,
             BookingStatus,
             ContactMethod,
-            Category 
+            Category,
+            Car,          // <-- Добавили Car
+            CarFeature    // <-- Добавили CarFeature
         ],
-        // Или верните авто-сканирование, если уверены, что нет "лишних" .entity файлов
+        // Или используйте авто-сканирование:
         // entities: [__dirname + '/../**/*.entity{.ts,.js}'],
         // ------------------------
 
@@ -59,10 +60,12 @@ import { AuthModule } from './auth/auth.module';
         logging: true,
       }),
     }),
+    // Остальные модули
     ToursModule,
     BookingsModule,
     CategoriesModule,
-    AuthModule, 
+    AuthModule,
+    CarsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
